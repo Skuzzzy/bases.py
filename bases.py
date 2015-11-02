@@ -15,7 +15,7 @@ class Bases(object):
 		# Known alphabets:
 		self.NUMERALS = string.digits
 		self.LETTERS_LOWERCASE = string.ascii_lowercase
-		self.LETTERS_UPPERCASE = self.LETTERS_LOWERCASE.upper()
+		self.LETTERS_UPPERCASE = string.ascii_uppercase
 		self.KNOWN_ALPHABETS = {}
 
 		# Each of the number ones, starting from base-2 (base-1 doesn't make sense?):
@@ -46,7 +46,7 @@ class Bases(object):
 		# Base-64 is a formally-specified alphabet that has a particular order:
 		# http://en.wikipedia.org/wiki/Base64 (and Python follows this too)
 		# TODO FIXME But our code above doesn't add padding! Don't use this yet...
-		self.KNOWN_ALPHABETS[64] = self.LETTERS_UPPERCASE + self.LETTERS_LOWERCASE + self.NUMERALS + '+/';
+		self.KNOWN_ALPHABETS[64] = self.LETTERS_UPPERCASE + self.LETTERS_LOWERCASE + self.NUMERALS + '+/'
 
 		# Flickr and others also have a base-58 that removes confusing characters, but
 		# there isn't consensus on the order of lowercase vs. uppercase... =/
@@ -78,20 +78,19 @@ class Bases(object):
 			num = math.floor(num / base)
 			if num == 0:
 				break
-		chars = [];
+		chars = []
 		while len(digits):
 			chars.append(alphabet[int(digits.pop())])
 		return ''.join(chars)
 
-	#Returns an integer representation of the given stringing for the given alphabet:
-	def fromAlphabet(self, string, alphabet):
+	# Returns an integer representation of the given stringing for the given alphabet:
+	def fromAlphabet(self, string_repr, alphabet):
 		base = len(alphabet)
 		pos = 0
 		num = 0
-		c = False
-		while len(string):
-			c = string[len(string) - 1]
-			string = string[:len(string) - 1]
+		while len(string_repr):
+			c = string_repr[len(string_repr) - 1]
+			string_repr = string_repr[:len(string_repr) - 1]
 			num += math.pow(base, pos) * alphabet.index(c)
 			pos += 1
 		return int(num)
@@ -100,8 +99,8 @@ class Bases(object):
 	def toBase(self, num, base):
 		return self.toAlphabet(num, self.KNOWN_ALPHABETS[base])
 
-	def fromBase(self, string, base):
-		return self.fromAlphabet(string, self.KNOWN_ALPHABETS[base])
+	def fromBase(self, string_repr, base):
+		return self.fromAlphabet(string_repr, self.KNOWN_ALPHABETS[base])
 
 	# Closure helper for convenience aliases like bases.toBase36():
 	def makeAlias(self, base, alphabet):
